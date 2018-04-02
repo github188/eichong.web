@@ -1,0 +1,60 @@
+<project name="netCore" default="jar" basedir=".">
+	<property name="product" value="netCore" />
+	<property name="version" value="1.1" />
+	<property name="src.dir" value="${basedir}/src" />
+	<property name="build.dir" value="${basedir}/build" />
+	<property name="classes.dir" value="${basedir}/bin" />
+	<property name="conf.dir" value="${basedir}/conf" />
+	<property name="lib.dir" value="${basedir}/../ecnLibs3.0/lib/" />
+	<property name="release.dir" value="${basedir}/release" />
+	<property name="jar.file" value="${product}.${version}.jar" />
+	<property name="logs.dir" value="${basedir}/logs" />
+	<echo message="开始打包JAR" />
+	<path id="classpath">
+		<fileset dir="${lib.dir}">
+			<include name="**/*.jar" />
+		</fileset>
+	</path>
+
+	<target name="init" depends="clean">
+		<echo>clean build dir</echo>
+		<delete dir="${build.dir}" quiet="true" />
+		<mkdir dir="${build.dir}" />
+	</target>
+
+	<target name="compile" depends="init">
+		<echo>compile the source</echo>
+		<javac srcdir="${src.dir}" destdir="${build.dir}" debug="true" encoding="UTF-8" fork="false" includeantruntime="on">
+			<include name="**/*.java" />
+			<classpath refid="classpath" />
+		</javac>
+		<copy todir="${build.dir}/">
+             <fileset dir="${basedir}">
+                <include name="*.log" />
+           </fileset>
+        </copy>
+	
+	</target>
+
+	<target name="jar" depends="compile">
+		<manifestclasspath property="lib.list" jarfile="${classes.dir}/${jar.file}">
+			<classpath refid="classpath" />
+		</manifestclasspath>
+		<jar destfile="${lib.dir}/${jar.file}">
+			<fileset dir="${build.dir}">
+			</fileset>
+		</jar>
+	</target>
+	<target name="clean">
+
+		<delete includeEmptyDirs="true" quiet="true">
+			<fileset dir="${classes.dir}/lib" />
+			<fileset dir="${classes.dir}/conf" />
+			<fileset dir="${classes.dir}/data" />
+			<fileset dir="${classes.dir}/logs" />
+		</delete>
+
+		<delete file="${classes.dir}/${jar.file}" quiet="true" />
+	</target>
+	<echo message="打包JAR结束" />
+</project>
